@@ -5,8 +5,6 @@ import { useMapStore } from '../store/useMapStore'
 
 const PALETTE = ['#3fb1ce', '#f43f5e', '#facc15', '#22c55e', '#8b5cf6']
 
-let nextId = 1
-
 /**
  * Renders nothing — just wires a native map interaction (click-to-place)
  * to a store action. Demonstrates that "reactive" doesn't only mean
@@ -23,7 +21,7 @@ export function ClickToAddMarker() {
 
     const handleClick = (e: MapMouseEvent) => {
       addMarkerRef.current({
-        id: `marker-${nextId++}`,
+        id: crypto.randomUUID(),
         lngLat: [e.lngLat.lng, e.lngLat.lat],
         color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
         draggable: true,
