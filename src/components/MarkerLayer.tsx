@@ -19,6 +19,7 @@ export function MarkerLayer() {
           lngLat={marker.lngLat}
           color={marker.color}
           draggable={marker.draggable}
+          popupText={marker.label}
           onDragEnd={(lngLat) => updateMarker(marker.id, { lngLat })}
         />
       ))}

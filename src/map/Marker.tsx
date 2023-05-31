@@ -8,6 +8,7 @@ export interface MarkerProps {
   color?: string
   draggable?: boolean
   onDragEnd?: (lngLat: LngLat) => void
+  popupText?: string
 }
 
 /**
@@ -21,9 +22,16 @@ export interface MarkerProps {
  * Parent components never touch mapboxgl directly — they just render/remove
  * <Marker /> elements and pass props, exactly like any other React component.
  */
-export function Marker({ lngLat, color = '#3fb1ce', draggable = false, onDragEnd }: MarkerProps) {
+export function Marker({
+  lngLat,
+  color = '#3fb1ce',
+  draggable = false,
+  onDragEnd,
+  popupText,
+}: MarkerProps) {
   const { map, isStyleLoaded } = useMapContext()
   const markerRef = useRef<mapboxgl.Marker | null>(null)
+  const popupRef = useRef<mapboxgl.Popup | null>(null)
 
   // onDragEnd is read from a ref so that changing the callback identity on
   // every render doesn't force the mount effect below to re-run.
@@ -39,6 +47,7 @@ export function Marker({ lngLat, color = '#3fb1ce', draggable = false, onDragEnd
     markerRef.current = marker
 
     return () => {
+      popupRef.current?.remove()
       marker.remove()
       markerRef.current = null
     }
@@ -78,6 +87,25 @@ export function Marker({ lngLat, color = '#3fb1ce', draggable = false, onDragEnd
       marker.off('dragend', handleDragEnd)
     }
   }, [draggable])
+
+  // Reactive prop: popup text. Created lazily on first use, then just its
+  // text content is swapped on subsequent updates.
+  useEffect(() => {
+    const marker = markerRef.current
+    if (!marker) return
+
+    if (!popupText) {
+      popupRef.current?.remove()
+      popupRef.current = null
+      return
+    }
+
+    if (!popupRef.current) {
+      popupRef.current = new mapboxgl.Popup({ offset: 24, closeButton: false })
+    }
+    popupRef.current.setText(popupText)
+    marker.setPopup(popupRef.current)
+  }, [popupText])
 
   return null
 }
