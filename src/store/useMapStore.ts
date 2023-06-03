@@ -9,6 +9,20 @@ export interface MarkerData {
   label?: string
 }
 
+export interface CitiesLayerConfig {
+  visible: boolean
+  color: string
+  radius: number
+  opacity: number
+}
+
+const DEFAULT_CITIES_LAYER_CONFIG: CitiesLayerConfig = {
+  visible: true,
+  color: '#f43f5e',
+  radius: 8,
+  opacity: 0.85,
+}
+
 interface MapStoreState {
   viewport: Viewport
   setViewport: (viewport: Viewport) => void
@@ -17,6 +31,9 @@ interface MapStoreState {
   addMarker: (marker: MarkerData) => void
   updateMarker: (id: string, patch: Partial<Omit<MarkerData, 'id'>>) => void
   removeMarker: (id: string) => void
+
+  citiesLayer: CitiesLayerConfig
+  updateCitiesLayer: (patch: Partial<CitiesLayerConfig>) => void
 }
 
 export const useMapStore = create<MapStoreState>((set) => ({
@@ -33,4 +50,10 @@ export const useMapStore = create<MapStoreState>((set) => ({
     })),
   removeMarker: (id) =>
     set((s) => ({ markers: s.markers.filter((m) => m.id !== id) })),
+
+  // Every knob a <Layer/> needs to redraw the cities circle layer lives here.
+  // The layer component never manages this state itself — it only reads it.
+  citiesLayer: DEFAULT_CITIES_LAYER_CONFIG,
+  updateCitiesLayer: (patch) =>
+    set((s) => ({ citiesLayer: { ...s.citiesLayer, ...patch } })),
 }))
