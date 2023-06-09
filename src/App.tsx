@@ -3,6 +3,7 @@ import { ViewportHud } from './components/ViewportHud'
 import { MarkerLayer } from './components/MarkerLayer'
 import { ClickToAddMarker } from './components/ClickToAddMarker'
 import { CitiesLayer } from './components/CitiesLayer'
+import { ControlPanel } from './components/ControlPanel'
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
 
@@ -15,6 +16,7 @@ function App() {
         <ClickToAddMarker />
       </MapProvider>
       <ViewportHud />
+      <ControlPanel />
     </div>
   )
 }
