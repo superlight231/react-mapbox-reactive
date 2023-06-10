@@ -32,6 +32,9 @@ interface MapStoreState {
   updateMarker: (id: string, patch: Partial<Omit<MarkerData, 'id'>>) => void
   removeMarker: (id: string) => void
 
+  selectedMarkerId: string | null
+  selectMarker: (id: string | null) => void
+
   citiesLayer: CitiesLayerConfig
   updateCitiesLayer: (patch: Partial<CitiesLayerConfig>) => void
 }
@@ -50,6 +53,9 @@ export const useMapStore = create<MapStoreState>((set) => ({
     })),
   removeMarker: (id) =>
     set((s) => ({ markers: s.markers.filter((m) => m.id !== id) })),
+
+  selectedMarkerId: null,
+  selectMarker: (id) => set({ selectedMarkerId: id }),
 
   // Every knob a <Layer/> needs to redraw the cities circle layer lives here.
   // The layer component never manages this state itself — it only reads it.
