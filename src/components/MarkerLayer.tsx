@@ -10,6 +10,8 @@ import { useMapStore } from '../store/useMapStore'
 export function MarkerLayer() {
   const markers = useMapStore((s) => s.markers)
   const updateMarker = useMapStore((s) => s.updateMarker)
+  const selectedMarkerId = useMapStore((s) => s.selectedMarkerId)
+  const selectMarker = useMapStore((s) => s.selectMarker)
 
   return (
     <>
@@ -20,7 +22,9 @@ export function MarkerLayer() {
           color={marker.color}
           draggable={marker.draggable}
           popupText={marker.label}
+          selected={marker.id === selectedMarkerId}
           onDragEnd={(lngLat) => updateMarker(marker.id, { lngLat })}
+          onClick={() => selectMarker(marker.id)}
         />
       ))}
     </>

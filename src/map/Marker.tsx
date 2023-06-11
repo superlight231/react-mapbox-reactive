@@ -9,6 +9,8 @@ export interface MarkerProps {
   draggable?: boolean
   onDragEnd?: (lngLat: LngLat) => void
   popupText?: string
+  selected?: boolean
+  onClick?: () => void
 }
 
 /**
@@ -28,15 +30,19 @@ export function Marker({
   draggable = false,
   onDragEnd,
   popupText,
+  selected = false,
+  onClick,
 }: MarkerProps) {
   const { map, isStyleLoaded } = useMapContext()
   const markerRef = useRef<mapboxgl.Marker | null>(null)
   const popupRef = useRef<mapboxgl.Popup | null>(null)
 
-  // onDragEnd is read from a ref so that changing the callback identity on
-  // every render doesn't force the mount effect below to re-run.
+  // Callbacks are read from refs so that changing their identity on every
+  // render doesn't force the mount effect below to re-run.
   const onDragEndRef = useRef(onDragEnd)
   onDragEndRef.current = onDragEnd
+  const onClickRef = useRef(onClick)
+  onClickRef.current = onClick
 
   // Mount / unmount: the marker entity's lifetime is tied 1:1 to this
   // component instance's lifetime, not to any individual prop.
@@ -46,7 +52,11 @@ export function Marker({
     const marker = new mapboxgl.Marker({ color }).setLngLat(lngLat).addTo(map)
     markerRef.current = marker
 
+    const handleClick = () => onClickRef.current?.()
+    marker.getElement().addEventListener('click', handleClick)
+
     return () => {
+      marker.getElement().removeEventListener('click', handleClick)
       popupRef.current?.remove()
       marker.remove()
       markerRef.current = null
@@ -106,6 +116,20 @@ export function Marker({
     popupRef.current.setText(popupText)
     marker.setPopup(popupRef.current)
   }, [popupText])
+
+  // Reactive prop: selected. Mapbox positions markers with an inline
+  // `transform` style, so a CSS class that also sets `transform` would be
+  // silently overridden every time the marker moves. `addClassName` +
+  // a `filter`-based style keeps the highlight independent of positioning.
+  useEffect(() => {
+    const marker = markerRef.current
+    if (!marker) return
+    if (selected) {
+      marker.addClassName('marker-selected')
+    } else {
+      marker.removeClassName('marker-selected')
+    }
+  }, [selected])
 
   return null
 }

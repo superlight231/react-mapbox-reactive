@@ -69,3 +69,8 @@ body,
   color: #666;
   font-size: 12px;
 }
+
+.marker-selected {
+  filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 2px #fff);
+  cursor: pointer;
+}
