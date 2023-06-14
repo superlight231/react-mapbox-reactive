@@ -34,10 +34,14 @@ export function Layer({ id, type, data, paint = {}, layout = {}, beforeId, onCli
   const prevLayoutRef = useRef<Record<string, unknown>>({})
   const onClickRef = useRef(onClick)
   onClickRef.current = onClick
+  // Only read at mount time (the initial position); subsequent changes are
+  // applied reactively via `moveLayer` further down.
+  const beforeIdRef = useRef(beforeId)
 
-  // Mount / unmount only — reacting to `type`/`beforeId` changing would
-  // require different handling than a plain update, so those two props are
-  // intentionally treated as "recreate the layer" props via the dep array.
+  // Mount / unmount only — reacting to `type` changing would require
+  // different handling than a plain update, so it's treated as a
+  // "recreate the layer" prop via the dep array. `beforeId` is deliberately
+  // left out here; it's handled reactively below via `moveLayer` instead.
   useEffect(() => {
     if (!map || !isStyleLoaded) return
 
@@ -45,7 +49,7 @@ export function Layer({ id, type, data, paint = {}, layout = {}, beforeId, onCli
       map.addSource(sourceId, { type: 'geojson', data } satisfies GeoJSONSourceRaw)
     }
     if (!map.getLayer(id)) {
-      map.addLayer({ id, type, source: sourceId, paint, layout } as AnyLayer, beforeId)
+      map.addLayer({ id, type, source: sourceId, paint, layout } as AnyLayer, beforeIdRef.current)
     }
     prevPaintRef.current = paint
     prevLayoutRef.current = layout
@@ -64,7 +68,7 @@ export function Layer({ id, type, data, paint = {}, layout = {}, beforeId, onCli
       isMountedRef.current = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map, isStyleLoaded, id, type, beforeId])
+  }, [map, isStyleLoaded, id, type])
 
   // Reactive prop: source data. `setData` patches the existing source in
   // place — no layer/source recreation, no flicker.
@@ -100,6 +104,15 @@ export function Layer({ id, type, data, paint = {}, layout = {}, beforeId, onCli
     }
     prevLayoutRef.current = layout
   }, [map, id, layout])
+
+  // Reactive prop: beforeId (stacking order). `moveLayer` repositions the
+  // existing layer in place — no removeLayer/addLayer round-trip needed.
+  useEffect(() => {
+    if (!map || !isMountedRef.current || !map.getLayer(id)) return
+    if (beforeIdRef.current === beforeId) return
+    map.moveLayer(id, beforeId)
+    beforeIdRef.current = beforeId
+  }, [map, id, beforeId])
 
   return null
 }
