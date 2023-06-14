@@ -9,6 +9,15 @@ export function ControlPanel() {
   const { visible, color, radius, opacity } = useMapStore((s) => s.citiesLayer)
   const updateCitiesLayer = useMapStore((s) => s.updateCitiesLayer)
   const markerCount = useMapStore((s) => s.markers.length)
+  const selectedMarkerId = useMapStore((s) => s.selectedMarkerId)
+  const removeMarker = useMapStore((s) => s.removeMarker)
+  const selectMarker = useMapStore((s) => s.selectMarker)
+
+  const handleRemoveSelected = () => {
+    if (!selectedMarkerId) return
+    removeMarker(selectedMarkerId)
+    selectMarker(null)
+  }
 
   return (
     <div className="control-panel">
@@ -59,6 +68,12 @@ export function ControlPanel() {
           />
         </label>
       </section>
+
+      {selectedMarkerId && (
+        <button className="remove-marker" onClick={handleRemoveSelected}>
+          Remove selected marker
+        </button>
+      )}
 
       <footer>{markerCount} marker{markerCount === 1 ? '' : 's'} on the map</footer>
     </div>

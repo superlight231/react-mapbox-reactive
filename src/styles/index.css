@@ -74,3 +74,20 @@ body,
   filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 2px #fff);
   cursor: pointer;
 }
+
+.remove-marker {
+  width: 100%;
+  margin-top: 14px;
+  padding: 6px 10px;
+  border: 1px solid #f43f5e;
+  border-radius: 6px;
+  background: #fff;
+  color: #f43f5e;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.remove-marker:hover {
+  background: #f43f5e;
+  color: #fff;
+}
