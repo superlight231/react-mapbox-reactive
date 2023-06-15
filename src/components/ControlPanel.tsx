@@ -12,6 +12,8 @@ export function ControlPanel() {
   const selectedMarkerId = useMapStore((s) => s.selectedMarkerId)
   const removeMarker = useMapStore((s) => s.removeMarker)
   const selectMarker = useMapStore((s) => s.selectMarker)
+  const heatmapVisible = useMapStore((s) => s.heatmapVisible)
+  const setHeatmapVisible = useMapStore((s) => s.setHeatmapVisible)
 
   const handleRemoveSelected = () => {
     if (!selectedMarkerId) return
@@ -68,6 +70,15 @@ export function ControlPanel() {
           />
         </label>
       </section>
+
+      <label className="row">
+        <input
+          type="checkbox"
+          checked={heatmapVisible}
+          onChange={(e) => setHeatmapVisible(e.target.checked)}
+        />
+        Population heatmap
+      </label>
 
       {selectedMarkerId && (
         <button className="remove-marker" onClick={handleRemoveSelected}>

@@ -37,6 +37,9 @@ interface MapStoreState {
 
   citiesLayer: CitiesLayerConfig
   updateCitiesLayer: (patch: Partial<CitiesLayerConfig>) => void
+
+  heatmapVisible: boolean
+  setHeatmapVisible: (visible: boolean) => void
 }
 
 export const useMapStore = create<MapStoreState>((set) => ({
@@ -62,4 +65,7 @@ export const useMapStore = create<MapStoreState>((set) => ({
   citiesLayer: DEFAULT_CITIES_LAYER_CONFIG,
   updateCitiesLayer: (patch) =>
     set((s) => ({ citiesLayer: { ...s.citiesLayer, ...patch } })),
+
+  heatmapVisible: false,
+  setHeatmapVisible: (heatmapVisible) => set({ heatmapVisible }),
 }))
