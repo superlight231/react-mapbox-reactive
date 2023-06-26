@@ -16,9 +16,9 @@ function App() {
         <CitiesHeatmapLayer />
         <MarkerLayer />
         <ClickToAddMarker />
+        <ViewportHud />
+        <ControlPanel />
       </MapProvider>
-      <ViewportHud />
-      <ControlPanel />
     </div>
   )
 }

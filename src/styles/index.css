@@ -91,3 +91,25 @@ body,
   background: #f43f5e;
   color: #fff;
 }
+
+.fit-markers {
+  width: 100%;
+  margin-top: 14px;
+  padding: 6px 10px;
+  border: 1px solid #3fb1ce;
+  border-radius: 6px;
+  background: #fff;
+  color: #3fb1ce;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.fit-markers:hover:not(:disabled) {
+  background: #3fb1ce;
+  color: #fff;
+}
+
+.fit-markers:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

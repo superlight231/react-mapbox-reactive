@@ -1,4 +1,5 @@
 import { useMapStore } from '../store/useMapStore'
+import { FitToMarkersButton } from './FitToMarkersButton'
 
 /**
  * Ordinary React UI — the point being made here is what it *doesn't* do:
@@ -93,6 +94,8 @@ export function ControlPanel() {
         />
         Population heatmap
       </label>
+
+      <FitToMarkersButton />
 
       {selectedMarkerId && (
         <button className="remove-marker" onClick={handleRemoveSelected}>
