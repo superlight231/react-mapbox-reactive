@@ -5,6 +5,7 @@ import { ClickToAddMarker } from './components/ClickToAddMarker'
 import { CitiesLayer } from './components/CitiesLayer'
 import { CitiesHeatmapLayer } from './components/CitiesHeatmapLayer'
 import { ControlPanel } from './components/ControlPanel'
+import { Legend } from './components/Legend'
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
 
@@ -18,6 +19,7 @@ function App() {
         <ClickToAddMarker />
         <ViewportHud />
         <ControlPanel />
+        <Legend />
       </MapProvider>
     </div>
   )
