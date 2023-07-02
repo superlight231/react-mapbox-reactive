@@ -12,7 +12,6 @@ export function ControlPanel() {
   const markerCount = useMapStore((s) => s.markers.length)
   const selectedMarkerId = useMapStore((s) => s.selectedMarkerId)
   const removeMarker = useMapStore((s) => s.removeMarker)
-  const selectMarker = useMapStore((s) => s.selectMarker)
   const heatmapVisible = useMapStore((s) => s.heatmapVisible)
   const setHeatmapVisible = useMapStore((s) => s.setHeatmapVisible)
   const activeBaseStyle = useMapStore((s) => s.activeBaseStyle)
@@ -21,7 +20,6 @@ export function ControlPanel() {
   const handleRemoveSelected = () => {
     if (!selectedMarkerId) return
     removeMarker(selectedMarkerId)
-    selectMarker(null)
   }
 
   return (

@@ -66,7 +66,10 @@ export const useMapStore = create<MapStoreState>((set) => ({
       markers: s.markers.map((m) => (m.id === id ? { ...m, ...patch } : m)),
     })),
   removeMarker: (id) =>
-    set((s) => ({ markers: s.markers.filter((m) => m.id !== id) })),
+    set((s) => ({
+      markers: s.markers.filter((m) => m.id !== id),
+      selectedMarkerId: s.selectedMarkerId === id ? null : s.selectedMarkerId,
+    })),
 
   selectedMarkerId: null,
   selectMarker: (id) => set({ selectedMarkerId: id }),
