@@ -2,6 +2,7 @@ import type { AnyLayer, GeoJSONSourceRaw, MapLayerMouseEvent } from 'mapbox-gl'
 import { useEffect, useRef } from 'react'
 import type { Feature, FeatureCollection } from 'geojson'
 import { useMapContext } from './MapContext'
+import { diffKeys } from './diffProps'
 
 export type LayerType = Extract<AnyLayer['type'], 'circle' | 'heatmap' | 'line' | 'fill' | 'symbol'>
 
@@ -84,11 +85,8 @@ export function Layer({ id, type, data, paint = {}, layout = {}, beforeId, onCli
   // mapbox calls it actually needs.
   useEffect(() => {
     if (!map || !isMountedRef.current || !map.getLayer(id)) return
-    const prev = prevPaintRef.current
-    for (const key of Object.keys(paint)) {
-      if (!Object.is(prev[key], paint[key])) {
-        map.setPaintProperty(id, key, paint[key])
-      }
+    for (const key of diffKeys(prevPaintRef.current, paint)) {
+      map.setPaintProperty(id, key, paint[key])
     }
     prevPaintRef.current = paint
   }, [map, id, paint])
@@ -96,11 +94,8 @@ export function Layer({ id, type, data, paint = {}, layout = {}, beforeId, onCli
   // Reactive prop: layout (e.g. visibility, symbol layout, ...).
   useEffect(() => {
     if (!map || !isMountedRef.current || !map.getLayer(id)) return
-    const prev = prevLayoutRef.current
-    for (const key of Object.keys(layout)) {
-      if (!Object.is(prev[key], layout[key])) {
-        map.setLayoutProperty(id, key, layout[key])
-      }
+    for (const key of diffKeys(prevLayoutRef.current, layout)) {
+      map.setLayoutProperty(id, key, layout[key])
     }
     prevLayoutRef.current = layout
   }, [map, id, layout])
