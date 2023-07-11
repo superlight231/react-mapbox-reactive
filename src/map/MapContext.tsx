@@ -1,7 +1,6 @@
 import mapboxgl from 'mapbox-gl'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { DEFAULT_VIEWPORT } from './types'
 import { BASE_STYLE_URLS, useMapStore } from '../store/useMapStore'
 
 export interface MapContextValue {
@@ -42,11 +41,19 @@ export function MapProvider({ accessToken, children }: MapProviderProps) {
     if (!containerRef.current) return
 
     mapboxgl.accessToken = accessToken
+    // Read once, directly from the store, rather than subscribing via the
+    // `useMapStore` hook — this is only ever used as the map's *initial*
+    // camera (which naturally reflects whatever `persist` already restored
+    // from localStorage before this component even rendered). Reacting to
+    // further store changes here would fight with the moveend sync below.
+    const { viewport } = useMapStore.getState()
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: BASE_STYLE_URLS[activeBaseStyle],
-      center: DEFAULT_VIEWPORT.center,
-      zoom: DEFAULT_VIEWPORT.zoom,
+      center: viewport.center,
+      zoom: viewport.zoom,
+      bearing: viewport.bearing,
+      pitch: viewport.pitch,
     })
     mapRef.current = map
 
