@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { DEFAULT_VIEWPORT, LngLat, Viewport } from '../map/types'
 
 export interface MarkerData {
@@ -53,36 +54,55 @@ interface MapStoreState {
   setActiveBaseStyle: (style: BaseStyle) => void
 }
 
-export const useMapStore = create<MapStoreState>((set) => ({
-  viewport: DEFAULT_VIEWPORT,
-  // Called both by the map itself (after the user pans/zooms) and by UI
-  // controls that want to *drive* the map (e.g. a "reset view" button).
-  setViewport: (viewport) => set({ viewport }),
+export const useMapStore = create<MapStoreState>()(
+  persist(
+    (set) => ({
+      viewport: DEFAULT_VIEWPORT,
+      // Called both by the map itself (after the user pans/zooms) and by UI
+      // controls that want to *drive* the map (e.g. a "reset view" button).
+      setViewport: (viewport) => set({ viewport }),
 
-  markers: [],
-  addMarker: (marker) => set((s) => ({ markers: [...s.markers, marker] })),
-  updateMarker: (id, patch) =>
-    set((s) => ({
-      markers: s.markers.map((m) => (m.id === id ? { ...m, ...patch } : m)),
-    })),
-  removeMarker: (id) =>
-    set((s) => ({
-      markers: s.markers.filter((m) => m.id !== id),
-      selectedMarkerId: s.selectedMarkerId === id ? null : s.selectedMarkerId,
-    })),
+      markers: [],
+      addMarker: (marker) => set((s) => ({ markers: [...s.markers, marker] })),
+      updateMarker: (id, patch) =>
+        set((s) => ({
+          markers: s.markers.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+        })),
+      removeMarker: (id) =>
+        set((s) => ({
+          markers: s.markers.filter((m) => m.id !== id),
+          selectedMarkerId: s.selectedMarkerId === id ? null : s.selectedMarkerId,
+        })),
 
-  selectedMarkerId: null,
-  selectMarker: (id) => set({ selectedMarkerId: id }),
+      selectedMarkerId: null,
+      selectMarker: (id) => set({ selectedMarkerId: id }),
 
-  // Every knob a <Layer/> needs to redraw the cities circle layer lives here.
-  // The layer component never manages this state itself — it only reads it.
-  citiesLayer: DEFAULT_CITIES_LAYER_CONFIG,
-  updateCitiesLayer: (patch) =>
-    set((s) => ({ citiesLayer: { ...s.citiesLayer, ...patch } })),
+      // Every knob a <Layer/> needs to redraw the cities circle layer lives
+      // here. The layer component never manages this state itself — it
+      // only reads it.
+      citiesLayer: DEFAULT_CITIES_LAYER_CONFIG,
+      updateCitiesLayer: (patch) =>
+        set((s) => ({ citiesLayer: { ...s.citiesLayer, ...patch } })),
 
-  heatmapVisible: false,
-  setHeatmapVisible: (heatmapVisible) => set({ heatmapVisible }),
+      heatmapVisible: false,
+      setHeatmapVisible: (heatmapVisible) => set({ heatmapVisible }),
 
-  activeBaseStyle: 'streets',
-  setActiveBaseStyle: (activeBaseStyle) => set({ activeBaseStyle }),
-}))
+      activeBaseStyle: 'streets',
+      setActiveBaseStyle: (activeBaseStyle) => set({ activeBaseStyle }),
+    }),
+    {
+      name: 'react-mapbox-reactive',
+      // Only persist the state a returning visitor would actually want
+      // restored — never the transient `selectedMarkerId`, and never
+      // anything Mapbox-related (there's nothing Mapbox-related in here to
+      // begin with, which is the point).
+      partialize: (state) => ({
+        viewport: state.viewport,
+        markers: state.markers,
+        citiesLayer: state.citiesLayer,
+        heatmapVisible: state.heatmapVisible,
+        activeBaseStyle: state.activeBaseStyle,
+      }),
+    },
+  ),
+)
