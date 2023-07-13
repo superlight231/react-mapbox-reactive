@@ -16,6 +16,8 @@ export function ControlPanel() {
   const setHeatmapVisible = useMapStore((s) => s.setHeatmapVisible)
   const activeBaseStyle = useMapStore((s) => s.activeBaseStyle)
   const setActiveBaseStyle = useMapStore((s) => s.setActiveBaseStyle)
+  const showAnimatedMarker = useMapStore((s) => s.showAnimatedMarker)
+  const setShowAnimatedMarker = useMapStore((s) => s.setShowAnimatedMarker)
 
   const handleRemoveSelected = () => {
     if (!selectedMarkerId) return
@@ -91,6 +93,15 @@ export function ControlPanel() {
           onChange={(e) => setHeatmapVisible(e.target.checked)}
         />
         Population heatmap
+      </label>
+
+      <label className="row">
+        <input
+          type="checkbox"
+          checked={showAnimatedMarker}
+          onChange={(e) => setShowAnimatedMarker(e.target.checked)}
+        />
+        Animated marker (~60fps)
       </label>
 
       <FitToMarkersButton />
