@@ -8,6 +8,7 @@ import { ControlPanel } from './components/ControlPanel'
 import { Legend } from './components/Legend'
 import { AnimatedMarker } from './components/AnimatedMarker'
 import { MissingTokenNotice } from './components/MissingTokenNotice'
+import { KeyboardShortcuts } from './components/KeyboardShortcuts'
 import { useMapStore } from './store/useMapStore'
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
@@ -26,6 +27,7 @@ function App() {
         <CitiesHeatmapLayer />
         <MarkerLayer />
         <ClickToAddMarker />
+        <KeyboardShortcuts />
         {showAnimatedMarker && <AnimatedMarker />}
         <ViewportHud />
         <ControlPanel />
