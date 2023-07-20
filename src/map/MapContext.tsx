@@ -56,6 +56,9 @@ export function MapProvider({ accessToken, children }: MapProviderProps) {
       pitch: viewport.pitch,
     })
     mapRef.current = map
+    // The map instance itself is available to consumers immediately —
+    // `isStyleLoaded` is what gates Marker/Layer from touching it too early.
+    setValue({ map, isStyleLoaded: false })
 
     // Fires once for the initial style, and again after every setStyle()
     // call below — both cases mean "the style is ready, sources/layers can
