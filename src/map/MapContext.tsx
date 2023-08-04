@@ -34,6 +34,7 @@ export function MapProvider({ accessToken, children }: MapProviderProps) {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [value, setValue] = useState<MapContextValue>({ map: null, isStyleLoaded: false })
   const setViewport = useMapStore((s) => s.setViewport)
+  const viewport = useMapStore((s) => s.viewport)
   const activeBaseStyle = useMapStore((s) => s.activeBaseStyle)
   const isFirstStyleRef = useRef(true)
 
@@ -110,6 +111,28 @@ export function MapProvider({ accessToken, children }: MapProviderProps) {
     setValue((v) => ({ ...v, isStyleLoaded: false }))
     map.setStyle(BASE_STYLE_URLS[activeBaseStyle])
   }, [activeBaseStyle])
+
+  // Reactive prop (via the store): viewport. This is the store -> map
+  // direction, the counterpart to the moveend handler above. It's guarded
+  // by a distance check rather than a "did I cause this" flag: if the
+  // store's viewport already matches the map's actual camera (which is
+  // exactly what just happened after handleMoveEnd ran), there's nothing to
+  // apply, and skipping avoids fighting the user's own gesture.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    const current = map.getCenter()
+    const centerDelta = Math.abs(current.lng - viewport.center[0]) + Math.abs(current.lat - viewport.center[1])
+    const zoomDelta = Math.abs(map.getZoom() - viewport.zoom)
+    if (centerDelta < 1e-5 && zoomDelta < 1e-3) return
+    map.easeTo({
+      center: viewport.center,
+      zoom: viewport.zoom,
+      bearing: viewport.bearing,
+      pitch: viewport.pitch,
+      duration: 500,
+    })
+  }, [viewport])
 
   return (
     <MapContext.Provider value={value}>
