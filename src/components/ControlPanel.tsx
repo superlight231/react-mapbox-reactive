@@ -1,5 +1,6 @@
 import { useMapStore } from '../store/useMapStore'
 import { FitToMarkersButton } from './FitToMarkersButton'
+import { ResetViewButton } from './ResetViewButton'
 
 /**
  * Ordinary React UI — the point being made here is what it *doesn't* do:
@@ -106,6 +107,7 @@ export function ControlPanel() {
       </label>
 
       <FitToMarkersButton />
+      <ResetViewButton />
 
       {selectedMarkerId && (
         <button className="remove-marker" onClick={handleRemoveSelected}>
