@@ -102,6 +102,7 @@ export const useMapStore = create<MapStoreState>()(
     }),
     {
       name: 'react-mapbox-reactive',
+      version: 1,
       // Only persist the state a returning visitor would actually want
       // restored — never the transient `selectedMarkerId`, and never
       // anything Mapbox-related (there's nothing Mapbox-related in here to
@@ -113,6 +114,26 @@ export const useMapStore = create<MapStoreState>()(
         heatmapVisible: state.heatmapVisible,
         activeBaseStyle: state.activeBaseStyle,
       }),
+      // Defends against a corrupted/previous-shape blob in localStorage
+      // (a stale schema, a manually edited value, ...) rather than trusting
+      // it and letting Mapbox choke on `NaN` centers or non-array markers.
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<MapStoreState>
+        const hasValidViewport =
+          p.viewport &&
+          Array.isArray(p.viewport.center) &&
+          p.viewport.center.length === 2 &&
+          Number.isFinite(p.viewport.center[0]) &&
+          Number.isFinite(p.viewport.center[1]) &&
+          Number.isFinite(p.viewport.zoom)
+
+        return {
+          ...current,
+          ...p,
+          viewport: hasValidViewport ? p.viewport! : current.viewport,
+          markers: Array.isArray(p.markers) ? p.markers : current.markers,
+        }
+      },
     },
   ),
 )
