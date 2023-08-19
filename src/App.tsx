@@ -11,6 +11,7 @@ import { MissingTokenNotice } from './components/MissingTokenNotice'
 import { KeyboardShortcuts } from './components/KeyboardShortcuts'
 import { MapLoadingOverlay } from './components/MapLoadingOverlay'
 import { UrlViewportSync } from './components/UrlViewportSync'
+import { DocumentTitleSync } from './components/DocumentTitleSync'
 import { useMapStore } from './store/useMapStore'
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
@@ -27,6 +28,7 @@ function App() {
       <MapProvider accessToken={MAPBOX_TOKEN}>
         <MapLoadingOverlay />
         <UrlViewportSync />
+        <DocumentTitleSync />
         <CitiesLayer />
         <CitiesHeatmapLayer />
         <MarkerLayer />
