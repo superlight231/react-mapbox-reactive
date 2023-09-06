@@ -120,6 +120,20 @@ components — for production use, it's almost certainly what you want instead
 of hand-rolling this. This repo exists to show *how* that kind of wrapper
 works under the hood, not to replace it.
 
+## Known limitations
+
+- **One map per `<MapProvider>`.** The context holds a single `mapboxgl.Map`
+  instance; rendering two providers works, but nothing here is optimized for
+  it (e.g. no shared token/style caching).
+- **The URL hash view isn't applied on the very first paint.** `<UrlViewportSync>`
+  mounts as a child of `MapProvider`, after the map already has its initial
+  camera — a shared link eases into place a moment later instead of loading
+  there directly. See the comment in `UrlViewportSync.tsx` for the reasoning
+  and what a production fix would look like.
+- **No clustering.** The cities layer/heatmap render every point directly;
+  for real-world point counts you'd want `cluster: true` on the source (see
+  Mapbox's [clustering example](https://docs.mapbox.com/mapbox-gl-js/example/cluster/)) — a good next `<Layer/>` variant to add.
+
 ## Testing
 
 `npm run test` runs the zustand store tests and the `diffKeys` unit tests (`vitest`). There's also a GitHub Actions workflow (`.github/workflows/ci.yml`) that runs lint, test, and build on every push.
