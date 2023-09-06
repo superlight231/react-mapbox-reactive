@@ -52,7 +52,14 @@ export function Marker({
     const marker = new mapboxgl.Marker({ color }).setLngLat(lngLat).addTo(map)
     markerRef.current = marker
 
-    const handleClick = () => onClickRef.current?.()
+    // A marker's DOM element is a sibling of the map canvas, not a child of
+    // it — so a click on it still bubbles up through the map's container
+    // and *also* fires any generic `map.on('click', ...)` listener (e.g.
+    // ClickToAddMarker). stopPropagation() is the documented fix.
+    const handleClick = (e: MouseEvent) => {
+      e.stopPropagation()
+      onClickRef.current?.()
+    }
     marker.getElement().addEventListener('click', handleClick)
 
     return () => {
